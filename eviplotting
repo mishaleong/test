@@ -1,0 +1,45 @@
+setwd("C:/Users/Misha/Dropbox/Bee Research/Chapters/Bees and GIS/ORNL DAAC Modis output")
+evi<-read.csv("all.evi.csv", header=TRUE)
+head(evi)
+ndvi<-read.csv("all.ndvi.csv", header=TRUE)
+head(ndvi)
+
+year<-substring(evi$date, 2, 5)
+year<-as.numeric(year)
+day<-substring(evi$date, 6,8)
+day<-as.numeric(day)
+day.frac<-day/365
+date2=(year+day.frac)
+evi<-cbind(evi,date2)
+
+
+evi.agr<-subset(evi, land=="agr")
+evi.urb<-subset(evi, land=="urb")
+evi.nat<-subset(evi, land=="nat")
+
+min.sd<-min(evi$stddev)
+max.sd<-max(evi$stddev)
+
+min.m<-min(evi$mean)
+max.m<-max(evi$mean)
+
+min.r<-min(evi$range)
+max.r<-max(evi$range)
+
+m<-aov(stddev~land, data=evi)
+summary(m)
+TukeyHSD(m)
+plot(stddev~date2, data=evi.nat, col="white", ylim=c(min.sd,max.sd), xlab="Year", ylab="Average Standard Deviation")
+points(stddev~date2, data=evi.urb, type="o", col="red")
+points(stddev~date2, data=evi.nat, type="o", col="darkgoldenrod1")
+points(stddev~date2, data=evi.agr, type="o", col="green")
+
+plot(stddev~date2, data=evi.nat, col="white", ylim=c(min.m,max.m), xlab="Year", ylab="Mean EVI")
+points(mean~date2, data=evi.urb, type="o", col="red")
+points(mean~date2, data=evi.nat, type="o", col="darkgoldenrod1")
+points(mean~date2, data=evi.agr, type="o", col="green")
+
+plot(stddev~date2, data=evi.nat, col="white", ylim=c(min.r,max.r), xlab="Year", ylab="Average Range")
+points(range~date2, data=evi.urb, type="o", col="red")
+points(range~date2, data=evi.nat, type="o", col="darkgoldenrod1")
+points(range~date2, data=evi.agr, type="o", col="green")
